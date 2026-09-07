@@ -1,0 +1,30 @@
+# ---- Dépendances ----
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+
+# ---- Build / dist ----
+dist/
+build/
+*.egg-info/
+
+# ---- Secrets & config locale ----
+.env
+.env.local
+*.local
+
+# ---- Base de données & vector store (données locales) ----
+*.db
+*.sqlite
+*.sqlite3
+chroma/
+chroma_db/
+
+# ---- IDE / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
