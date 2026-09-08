@@ -73,15 +73,15 @@ class Settings:
         self.smtp_from: str = os.getenv("SMTP_FROM", "").strip() or self.smtp_user
 
         # --- CORS ---
-        # Comma-separated list of allowed frontend origins. In dev the Vite
-        # server runs on :5173; in prod add your deployed site's origin here
-        # (e.g. CORS_ORIGINS="https://your-portfolio.netlify.app").
+        default_origins = (
+            "http://localhost:5173,"
+            "http://localhost:3000,"
+            "https://youssefennagui.me,"
+            "https://www.youssefennagui.me"
+        )
         self.cors_origins: list[str] = [
             origin.strip()
-            for origin in os.getenv(
-                "CORS_ORIGINS",
-                "www.youssefennagui.me",
-            ).split(",")
+            for origin in os.getenv("CORS_ORIGINS", default_origins).split(",")
             if origin.strip()
         ]
 
