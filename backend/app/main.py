@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 
 
 from .database import Base, engine, ensure_schema
@@ -10,6 +11,7 @@ from . import models  # noqa: F401 (nécessaire pour enregistrer la table)
 from .config import get_settings
 from .routers import projects, chat, contact
 from .routers.admin import admin_router, public_router
+from .rag.ingest import run_ingest
 
 settings = get_settings()
 
@@ -21,10 +23,20 @@ ensure_schema()
 # Dossier des images uploadées (servi statiquement sur /uploads).
 os.makedirs(settings.upload_dir, exist_ok=True)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # كيعمر الـ Vector Store تلقائياً عند الإقلاع
+    try:
+        run_ingest()
+    except Exception as e:
+        print(f"Ingest warning: {e}")
+    yield
+
 
 app = FastAPI(
     title = "Portfolio API",
-    version='0.2.0'
+    version='0.2.0',
+    lifespan=lifespan
 )
 
 
