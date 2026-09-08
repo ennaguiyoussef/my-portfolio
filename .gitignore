@@ -28,3 +28,6 @@ chroma_db/
 .idea/
 .DS_Store
 Thumbs.db
+# ---- Uploads (user-provided images, served at /uploads) ----
+backend/uploads/
+uploads/

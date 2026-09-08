@@ -1,0 +1,900 @@
+/* ============================================
+   ROADMAP - World-Class Vertical Timeline
+   Architecture: 3-Column Grid (Year | Node | Card)
+   ============================================ */
+
+/* ============================================
+   ROOT VARIABLES FOR THIS COMPONENT
+   ============================================ */
+.timeline-wrapper {
+  --timeline-axis-x: 100px;        /* Desktop: center of node column */
+  --node-size: 48px;               /* Node diameter */
+  --node-column-width: 48px;       /* Width of center column */
+  --year-column-width: 120px;      /* Width of left column */
+  --gap: 2.5rem;                   /* Gap between node and card (40px) */
+  --card-min-height: 160px;
+}
+
+/* Tablet adjustments */
+@media (max-width: 900px) {
+  .timeline-wrapper {
+    --timeline-axis-x: 84px;
+    --node-size: 44px;
+    --node-column-width: 44px;
+    --year-column-width: 100px;
+    --gap: 2rem;
+    --card-min-height: 150px;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .timeline-wrapper {
+    --timeline-axis-x: 68px;
+    --node-size: 40px;
+    --node-column-width: 40px;
+    --year-column-width: 84px;
+    --gap: 1.5rem;
+    --card-min-height: 140px;
+  }
+}
+
+/* ============================================
+   SECTION CONTAINER
+   ============================================ */
+.roadmap {
+  position: relative;
+  padding-top: var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
+}
+
+/* ============================================
+   TIMELINE WRAPPER - Main Layout Grid
+   ============================================ */
+.timeline-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* 3-Column Grid: Year | Node | Card */
+.timeline-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    var(--year-column-width)    /* Column 1: Year badge */
+    var(--node-column-width)    /* Column 2: Node & connectors */
+    1fr;                        /* Column 3: Content card */
+  column-gap: 0;
+  row-gap: var(--space-10);     /* Vertical spacing between steps */
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+/* ============================================
+   TIMELINE AXIS - The Central Spine
+   Runs through the center of the node column
+   ============================================ */
+.timeline-axis {
+  position: absolute;
+  left: var(--timeline-axis-x);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    var(--color-border-subtle) 0%,
+    var(--color-border-glow) 25%,
+    var(--color-border-glow) 75%,
+    var(--color-border-subtle) 100%
+  );
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/* Progress fill - fills from bottom to top as user scrolls */
+.timeline-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transform-origin: bottom;
+  transform: scaleY(0);
+  box-shadow:
+    0 0 12px var(--color-accent-primary),
+    0 0 24px var(--color-accent-secondary),
+    inset 0 0 8px rgba(255, 255, 255, 0.1);
+  z-index: 2;
+  transition: height 0.1s linear;
+}
+
+/* Progress indicator - moves along the axis */
+.timeline-indicator {
+  position: absolute;
+  top: var(--progress-position, 0%);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: var(--color-accent-primary);
+  border-radius: 50%;
+  border: 3px solid var(--color-bg-deep);
+  box-shadow:
+    0 0 0 0 rgba(34, 211, 238, 0.5),
+    0 0 16px rgba(34, 211, 238, 0.4);
+  z-index: 10;
+}
+
+/* ============================================
+   TIMELINE STEP - Grid Item
+   Each step spans all 3 columns via grid-row
+   ============================================ */
+.timeline-step {
+  display: contents; /* Allows children to participate in parent grid */
+}
+
+/* Column 1: Year Badge */
+.timeline-year {
+  grid-column: 1;
+  grid-row: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: var(--space-5);
+  padding-top: calc(var(--node-size) / 2 - 10px); /* Align with node center */
+  z-index: 3;
+}
+
+.year-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  min-width: max-content;
+  white-space: nowrap;
+  transition: all var(--duration-normal) var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.year-badge.is-active {
+  color: var(--color-accent-tertiary);
+  border-color: var(--color-accent-tertiary);
+  background: rgba(16, 185, 129, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(16, 185, 129, 0.2),
+    0 0 16px rgba(16, 185, 129, 0.15);
+}
+
+/* Column 2: Node & Connector Column */
+.timeline-node-column {
+  grid-column: 2;
+  grid-row: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+}
+
+/* Node Wrapper - Contains node + connector segments */
+.node-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--node-column-width);
+}
+
+/* Connector Segments - Fill space between nodes */
+.connector-segment {
+  flex: 1;
+  width: 2px;
+  background: var(--color-border-subtle);
+  min-height: 0;
+  transition: background var(--duration-normal) var(--ease-out);
+}
+
+/* When step is active, color the connector segments */
+.timeline-step.is-active .connector-segment {
+  background: linear-gradient(180deg,
+    var(--color-accent-tertiary) 0%,
+    var(--color-accent-primary) 100%
+  );
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Node Core - The circular milestone marker */
+.node-core {
+  position: relative;
+  width: var(--node-size);
+  height: var(--node-size);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+/* Node Inner - The actual circle with icon */
+.node-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-card);
+  border: 3px solid var(--step-color);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 4px var(--color-bg-deep),
+    0 0 24px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 2;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.node-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Decorative Rings */
+.node-ring {
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--step-color);
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: ringPulse 3s ease-out infinite;
+}
+
+.node-pulse {
+  position: absolute;
+  inset: -12px;
+  border: 2px solid var(--step-color);
+  border-radius: 50%;
+  opacity: 0.12;
+  animation: ringPulse 3s ease-out 1.5s infinite;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Checkmark when visible */
+.node-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-tertiary);
+  border: 3px solid var(--color-bg-deep);
+  border-radius: 50%;
+  z-index: 3;
+}
+
+/* Active Step - Extra pulsing ring */
+.node-active-ring {
+  position: absolute;
+  inset: -14px;
+  border: 2px solid var(--color-accent-tertiary);
+  border-radius: 50%;
+  opacity: 0;
+  z-index: 0;
+}
+
+/* Active step node inner glow */
+.timeline-step.is-active .node-inner {
+  box-shadow:
+    0 0 0 4px var(--color-bg-deep),
+    0 0 32px rgba(16, 185, 129, 0.4),
+    inset 0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================
+   COLUMN 3: CONTENT CARD
+   ============================================ */
+.timeline-card {
+  grid-column: 3;
+  grid-row: auto;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  min-height: var(--card-min-height);
+  position: relative;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+/* Card type accent borders */
+.timeline-card.education {
+  border-left: 4px solid var(--color-accent-secondary);
+}
+
+.timeline-card.career {
+  border-left: 4px solid var(--color-accent-tertiary);
+}
+
+/* Hover state */
+.timeline-card:hover {
+  border-color: var(--color-border-glow);
+  box-shadow: var(--glow-card);
+  transform: translateX(6px);
+}
+
+/* Active Card - Enhanced styling */
+.timeline-card.is-active {
+  border-color: var(--color-accent-tertiary);
+  background:
+    linear-gradient(145deg, rgba(16, 185, 129, 0.025) 0%, var(--color-bg-card) 100%),
+    var(--color-bg-card);
+  box-shadow:
+    0 0 40px rgba(16, 185, 129, 0.12),
+    var(--glow-card);
+}
+
+/* Animated gradient border for active card */
+.timeline-card.is-active::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--radius-xl) + 2px);
+  background: linear-gradient(135deg, var(--color-accent-tertiary), var(--color-accent-primary), var(--color-accent-secondary));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0) border-box;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  animation: borderRotate 5s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes borderRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+  line-height: var(--leading-tight);
+}
+
+.card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-normal);
+}
+
+/* Meta Items Row */
+.card-meta-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  align-items: center;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.meta-item .icon-xs {
+  color: var(--color-text-subtle);
+  flex-shrink: 0;
+}
+
+.meta-item.location-secondary {
+  color: var(--color-text-secondary);
+}
+
+.meta-item.location-secondary .icon-xs {
+  color: var(--color-accent-primary);
+}
+
+/* Skills Tags */
+.card-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-deep);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  transition: all var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+  cursor: default;
+  position: relative;
+}
+
+.skill-tag::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background: var(--tag-color);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+  z-index: -1;
+}
+
+.skill-tag:hover {
+  border-color: var(--tag-color);
+  color: var(--tag-color);
+  transform: scale(1.05);
+}
+
+.skill-tag:hover::before {
+  opacity: 0.1;
+}
+
+.more-tag {
+  color: var(--color-text-muted);
+  background: transparent;
+  border-style: dashed;
+}
+
+.more-tag:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-muted);
+  background: transparent;
+}
+
+/* ============================================
+   CTA SECTION (Active Step Only)
+   ============================================ */
+.card-cta {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
+  text-align: center;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-accent-tertiary) 0%, #059669 100%);
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow:
+    0 4px 20px rgba(16, 185, 129, 0.35),
+    0 0 0 1px rgba(16, 185, 129, 0.18) inset;
+}
+
+.cta-button:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 30px rgba(16, 185, 129, 0.45),
+    0 0 0 1px rgba(16, 185, 129, 0.25) inset;
+}
+
+.cta-button:focus-visible {
+  outline: 2px solid var(--color-accent-tertiary);
+  outline-offset: 2px;
+}
+
+.cta-button .icon-sm {
+  flex-shrink: 0;
+}
+
+.cta-note {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-medium);
+}
+
+/* ============================================
+   FUTURE ASPIRATIONS SECTION
+   ============================================ */
+.future-aspirations {
+  grid-column: 1 / -1; /* Span all columns */
+  margin-top: var(--space-6);
+  padding-top: var(--space-10);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.future-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+}
+
+.future-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.future-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.future-subtitle {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+}
+
+.future-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .future-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.future-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.future-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.future-card:hover::before {
+  opacity: 1;
+}
+
+.future-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+}
+
+.future-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.future-year {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.future-card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.future-card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .node-ring,
+  .node-pulse,
+  .node-active-ring,
+  .timeline-indicator,
+  .future-icon {
+    animation: none !important;
+  }
+
+  .node-ring,
+  .node-pulse {
+    opacity: 0.08;
+  }
+
+  .node-active-ring {
+    opacity: 0.15;
+  }
+
+  .timeline-indicator {
+    box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.3);
+  }
+
+  .timeline-progress {
+    transition: none;
+  }
+
+  .timeline-card {
+    transition: none;
+  }
+
+  .timeline-card:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+[data-theme="light"] {
+  /* Timeline axis uses lighter gradient */
+  .timeline-axis {
+    background: linear-gradient(180deg,
+      var(--color-border-subtle) 0%,
+      var(--color-border-glow) 25%,
+      var(--color-border-glow) 75%,
+      var(--color-border-subtle) 100%
+    );
+  }
+
+  .year-badge {
+    background: var(--color-bg-elevated);
+    border-color: var(--color-border-subtle);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .year-badge.is-active {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: var(--color-accent-tertiary);
+    box-shadow:
+      0 0 0 1px rgba(5, 150, 105, 0.2),
+      0 0 16px rgba(5, 150, 105, 0.12);
+  }
+
+  .node-inner {
+    box-shadow:
+      0 0 0 4px var(--color-bg-deep),
+      0 0 24px rgba(0, 0, 0, 0.12),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  }
+
+  .timeline-step.is-active .node-inner {
+    box-shadow:
+      0 0 0 4px var(--color-bg-deep),
+      0 0 32px rgba(5, 150, 105, 0.35),
+      inset 0 0 0 1px rgba(5, 150, 105, 0.25);
+  }
+
+  .node-check {
+    border-color: var(--color-bg-deep);
+  }
+
+  .timeline-card {
+    background: var(--color-bg-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .timeline-card:hover {
+    box-shadow:
+      0 10px 30px -10px rgba(0, 0, 0, 0.1),
+      0 4px 12px -4px rgba(0, 0, 0, 0.06);
+    border-color: var(--color-border-glow);
+  }
+
+  .timeline-card.is-active {
+    background:
+      linear-gradient(145deg, rgba(5, 150, 105, 0.04) 0%, var(--color-bg-card) 100%),
+      var(--color-bg-card);
+    box-shadow:
+      0 0 40px rgba(5, 150, 105, 0.1),
+      0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  .skill-tag {
+    background: var(--color-bg-elevated);
+    border-color: var(--color-border-subtle);
+  }
+
+  .skill-tag:hover::before {
+    opacity: 0.08;
+  }
+
+  .future-card {
+    background: var(--color-bg-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .future-header {
+    background: var(--gradient-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .card-cta {
+    border-top-color: var(--color-border-subtle);
+  }
+
+  .cta-button {
+    box-shadow:
+      0 4px 20px rgba(5, 150, 105, 0.3),
+      0 0 0 1px rgba(5, 150, 105, 0.15) inset;
+  }
+
+  .cta-button:hover {
+    box-shadow:
+      0 8px 30px rgba(5, 150, 105, 0.38),
+      0 0 0 1px rgba(5, 150, 105, 0.2) inset;
+  }
+
+  .connector-segment {
+    background: var(--color-border-subtle);
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE SUPPORT
+   ============================================ */
+@media (prefers-contrast: high) {
+  .year-badge {
+    border-width: 2px;
+  }
+
+  .node-inner {
+    border-width: 4px;
+  }
+
+  .timeline-card {
+    border-width: 2px;
+  }
+
+  .skill-tag {
+    border-width: 2px;
+  }
+
+  .cta-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .roadmap {
+    page-break-inside: avoid;
+  }
+
+  .timeline-axis,
+  .timeline-progress,
+  .timeline-indicator,
+  .node-ring,
+  .node-pulse,
+  .node-active-ring {
+    display: none;
+  }
+
+  .timeline-steps {
+    display: block;
+  }
+
+  .timeline-step {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: var(--space-8);
+    page-break-inside: avoid;
+  }
+
+  .timeline-year {
+    display: none;
+  }
+
+  .timeline-node-column {
+    display: none;
+  }
+
+  .timeline-card {
+    display: block;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    min-height: auto;
+    padding: var(--space-4);
+  }
+
+  .connector-segment {
+    display: none;
+  }
+}
