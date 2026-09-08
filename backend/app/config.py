@@ -80,7 +80,7 @@ class Settings:
             origin.strip()
             for origin in os.getenv(
                 "CORS_ORIGINS",
-                "*",
+                "www.youssefennagui.me",
             ).split(",")
             if origin.strip()
         ]
