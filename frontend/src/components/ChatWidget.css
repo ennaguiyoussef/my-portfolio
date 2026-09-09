@@ -49,6 +49,7 @@
   max-width: calc(100vw - 2.5rem);
   height: 520px;
   max-height: calc(100vh - 7rem);
+  max-height: calc(100dvh - 7rem);
   display: flex;
   flex-direction: column;
   border-radius: 24px;

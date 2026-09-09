@@ -78,17 +78,20 @@
   --font-body: 'DM Sans', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* Type Scale */
-  --text-xs: 0.7rem;
-  --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.25rem;
-  --text-4xl: 3rem;
-  --text-5xl: 4rem;
-  --text-6xl: 5.5rem;
+  /* Type Scale — fluid clamp(): mobile floor · ≈current at desktop · gentle 4K ceiling.
+     Preferred lines are anchored so each token matches its previous static value
+     around the 1200–1440px laptop range, scales down cleanly to 320–375px,
+     and caps before ultrawide so headings never run away. */
+  --text-xs: clamp(0.68rem, 0.655rem + 0.08vw, 0.74rem);
+  --text-sm: clamp(0.78rem, 0.75rem + 0.11vw, 0.84rem);
+  --text-base: clamp(0.875rem, 0.855rem + 0.12vw, 0.95rem);
+  --text-lg: clamp(1.05rem, 1rem + 0.2vw, 1.2rem);
+  --text-xl: clamp(1.2rem, 1.08rem + 0.42vw, 1.5rem);
+  --text-2xl: clamp(1.45rem, 1.24rem + 0.72vw, 1.9rem);
+  --text-3xl: clamp(1.8rem, 1.48rem + 1.05vw, 2.45rem);
+  --text-4xl: clamp(2.2rem, 1.7rem + 1.7vw, 3.25rem);
+  --text-5xl: clamp(2.75rem, 1.95rem + 2.7vw, 4.35rem);
+  --text-6xl: clamp(3.4rem, 2.3rem + 3.8vw, 6rem);
 
   /* Font Weights */
   --font-light: 300;
@@ -164,8 +167,21 @@
   --container-max: 1200px;
   --container-narrow: 800px;
   --header-height: 72px;
-  --section-padding-y: var(--space-16);
-  --section-padding-x: var(--space-6);
+  /* Fluid vertical rhythm & gutters — scale with the viewport, then cap. */
+  --section-padding-y: clamp(2.5rem, 1.7rem + 2.6vw, 5.25rem);
+  --section-padding-x: clamp(1.1rem, 0.85rem + 0.85vw, 2rem);
+}
+
+/* Ultrawide: widen the reading container gently at each step, then hold,
+   so large and 4K displays feel intentional without over-long line lengths. */
+@media (min-width: 1600px) {
+  :root { --container-max: 1320px; }
+}
+@media (min-width: 1920px) {
+  :root { --container-max: 1440px; }
+}
+@media (min-width: 2560px) {
+  :root { --container-max: 1600px; }
 }
 
 /* Z-Index Scale */
@@ -225,7 +241,20 @@ body {
   line-height: var(--leading-normal);
   font-weight: var(--font-regular);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
+}
+
+/* Media guard — replaced elements never force horizontal overflow.
+   Class-based sizing (e.g. .portrait-img, icon utilities) keeps priority,
+   so this only affects otherwise-unconstrained media. */
+img, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  max-width: 100%;
 }
 
 /* Selection */

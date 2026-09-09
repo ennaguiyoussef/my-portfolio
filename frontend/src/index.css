@@ -37,6 +37,7 @@ body {
   font-family: var(--font-body);
   line-height: var(--leading-normal);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Ensure sections use new scroll margin */

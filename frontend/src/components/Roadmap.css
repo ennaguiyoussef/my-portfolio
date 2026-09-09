@@ -5,38 +5,19 @@
 
 /* ============================================
    ROOT VARIABLES FOR THIS COMPONENT
+   Fluid clamps fitted to pass through the original three breakpoints
+   (mobile ≈320–600px · tablet ≈840–900px · desktop ≥1100px) so the
+   timeline geometry is faithful at each reference width and interpolates
+   smoothly in between — no layout jumps. node-size and node-column-width
+   share one expression so the node always fits its column exactly.
    ============================================ */
 .timeline-wrapper {
-  --timeline-axis-x: 100px;        /* Desktop: center of node column */
-  --node-size: 48px;               /* Node diameter */
-  --node-column-width: 48px;       /* Width of center column */
-  --year-column-width: 120px;      /* Width of left column */
-  --gap: 2.5rem;                   /* Gap between node and card (40px) */
-  --card-min-height: 160px;
-}
-
-/* Tablet adjustments */
-@media (max-width: 900px) {
-  .timeline-wrapper {
-    --timeline-axis-x: 84px;
-    --node-size: 44px;
-    --node-column-width: 44px;
-    --year-column-width: 100px;
-    --gap: 2rem;
-    --card-min-height: 150px;
-  }
-}
-
-/* Mobile adjustments */
-@media (max-width: 600px) {
-  .timeline-wrapper {
-    --timeline-axis-x: 68px;
-    --node-size: 40px;
-    --node-column-width: 40px;
-    --year-column-width: 84px;
-    --gap: 1.5rem;
-    --card-min-height: 140px;
-  }
+  --timeline-axis-x: clamp(68px, 30px + 6.35vw, 100px);  /* center of spine rail */
+  --node-size: clamp(40px, 30.5px + 1.6vw, 48px);        /* node diameter */
+  --node-column-width: clamp(40px, 30.5px + 1.6vw, 48px);/* == node-size */
+  --year-column-width: clamp(84px, 41px + 7.14vw, 120px);/* left column */
+  --gap: clamp(1.5rem, 0.3rem + 3.2vw, 2.5rem);          /* node↔card gap */
+  --card-min-height: clamp(140px, 116px + 4vw, 160px);
 }
 
 /* ============================================
@@ -603,7 +584,7 @@
 
 .future-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: var(--space-4);
 }
 

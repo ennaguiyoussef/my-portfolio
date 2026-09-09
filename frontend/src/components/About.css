@@ -3,14 +3,14 @@
    ============================================ */
 
 .about {
-  padding-top: var(--space-16);
-  padding-bottom: var(--space-16);
+  padding-top: var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
 }
 
 /* Grid Layout - Image Left, Content Right */
 .about-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: clamp(300px, 30vw, 400px) minmax(0, 1fr);
   gap: var(--space-10);
   align-items: start;
 }
@@ -231,6 +231,7 @@
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-5);
+  max-width: 68ch;
 }
 
 .about-text:last-child {
@@ -240,7 +241,7 @@
 /* Highlights - Minimal */
 .about-highlights {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
   gap: var(--space-3);
   margin-bottom: var(--space-8);
   padding-bottom: var(--space-8);
@@ -321,7 +322,7 @@
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
   gap: var(--space-3);
 }
 
@@ -413,7 +414,7 @@
 
 .skills-minimal-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: var(--space-4);
 }
 
