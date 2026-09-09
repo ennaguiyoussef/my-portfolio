@@ -2,22 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   GitBranch,
-  ExternalLink,
   Code2,
   Database,
-  Cloud,
   Cpu,
   Brain,
-  Zap,
   Layers,
   Search,
   Filter,
   Lock,
-  Image,
-  Star,
-  GitFork,
-  Server,
-  Bot,
+  FolderOpen,
 } from 'lucide-react';
 import './Projects.css';
 
@@ -58,11 +51,9 @@ function ProjectPlaceholder({ category, CategoryIcon }) {
 
   return (
     <div className={`relative w-full h-full flex items-center justify-center p-6 bg-gradient-to-br ${gradient} ${borderColor} border rounded-t-2xl overflow-hidden`}>
-      {/* Glassmorphic category badge - top left */}
       <span className="absolute top-4 left-4 px-2.5 py-1 text-xs font-medium rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20">
         {category}
       </span>
-      {/* Subtle grid pattern */}
       <svg className="absolute inset-0 opacity-30" viewBox="0 0 100 100" preserveAspectRatio="none">
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -72,12 +63,10 @@ function ProjectPlaceholder({ category, CategoryIcon }) {
         <rect width="100" height="100" fill="url(#grid)" />
       </svg>
 
-      {/* Floating geometric accents */}
       <div className="absolute top-4 left-4 w-12 h-12 rounded-full bg-white/5 blur-xl" />
       <div className="absolute bottom-4 right-4 w-16 h-16 rounded-full bg-white/5 blur-xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/5 blur-xl" />
 
-      {/* Category Icon */}
       <div className="relative flex flex-col items-center gap-3">
         <CategoryIcon className={`${iconColor} text-5xl drop-shadow-[0_0_20px_currentColor]`} />
         <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white">
@@ -105,94 +94,13 @@ function ProjectImage({ src, alt, category, CategoryIcon, isError }) {
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         onError={() => setHasError(true)}
       />
-      {/* Subtle overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" aria-hidden="true" />
     </div>
   );
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-const fallbackProjects = [
-  {
-    id: 1,
-    title: 'Agentic RAG Chatbot',
-    description: 'Production-grade chatbot with autonomous multi-step reasoning, citation tracking, and real-time token streaming.',
-    longDescription: 'Built a sophisticated RAG system using LangGraph for agent orchestration. Implements hybrid search (semantic + keyword), document reranking, and tool-calling agents for web search, code execution, and API integration. Includes conversation memory, source attribution, and real-time token streaming.',
-    technologies: ['Python', 'LangGraph', 'FastAPI', 'ChromaDB', 'React', 'TypeScript', 'Tailwind CSS', 'WebSockets'],
-    category: 'AI/ML',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: true,
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=450&fit=crop',
-    metrics: { stars: 247, forks: 32 }
-  },
-  {
-    id: 2,
-    title: 'End-to-End ML Pipeline Platform',
-    description: 'Complete ML platform from data ingestion to model deployment with automated feature engineering and model monitoring.',
-    longDescription: 'Designed and built a production ML platform with Kubeflow pipelines. Features automated data validation, drift detection, model registry with lineage tracking, canary deployments, and comprehensive monitoring dashboards. Supports both batch and real-time inference.',
-    technologies: ['Python', 'PyTorch', 'Kubeflow', 'Docker', 'Kubernetes', 'MLflow', 'Prometheus', 'Grafana'],
-    category: 'MLOps',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: true,
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&h=450&fit=crop',
-    metrics: { stars: 189, forks: 24 }
-  },
-  {
-    id: 3,
-    title: 'Multi-Agent Code Assistant',
-    description: 'Autonomous multi-agent system for code generation, review, and refactoring with GitHub Actions integration.',
-    longDescription: 'Built using LangGraph with specialized agents for code analysis, test generation, security review, and documentation. Integrates with GitHub Actions for automated PR reviews. Achieves 92% accuracy on HumanEval benchmark.',
-    technologies: ['Python', 'LangGraph', 'FastAPI', 'React', 'PostgreSQL', 'Redis', 'GitHub API', 'WebSockets'],
-    category: 'AI/ML',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=450&fit=crop',
-    metrics: { stars: 156, forks: 18 }
-  },
-  {
-    id: 4,
-    title: 'Real-Time Analytics Dashboard',
-    description: 'High-performance dashboard for streaming data visualization handling 100K+ events/second with sub-second latency.',
-    longDescription: 'Built with React, TypeScript, and WebSocket connections to a Go backend. Implements virtualized rendering for large datasets, WebGL-accelerated charts, and real-time collaboration using CRDTs. Deployed on Kubernetes with auto-scaling.',
-    technologies: ['React', 'TypeScript', 'Go', 'WebSockets', 'ClickHouse', 'Redis', 'Docker', 'Kubernetes'],
-    category: 'Full-Stack',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop',
-    metrics: { stars: 312, forks: 45 }
-  },
-  {
-    id: 5,
-    title: 'Vector Search Engine',
-    description: 'Custom vector database with HNSW indexing, hybrid search, filtering, and real-time updates.',
-    longDescription: 'Built from scratch in Rust with Python bindings. Implements hierarchical navigable small world (HNSW) graphs for approximate nearest neighbor search. Supports metadata filtering, range queries, and incremental indexing. Achieves 99.5% recall at 10x lower latency.',
-    technologies: ['Rust', 'Python', 'PyO3', 'HNSW', 'SIMD', 'Docker', 'Benchmarking'],
-    category: 'Infrastructure',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: true,
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=450&fit=crop',
-    metrics: { stars: 423, forks: 56 }
-  },
-  {
-    id: 6,
-    title: 'Distributed Task Queue',
-    description: 'High-throughput distributed task queue with priority scheduling, retries, dead letter queues, and exactly-once semantics.',
-    longDescription: 'Implemented in Go with Redis backend. Features priority queues, delayed execution, cron-like scheduling, rate limiting, and horizontal scaling. Includes Python SDK and dashboard for monitoring. Processes 1M+ tasks/day in production.',
-    technologies: ['Go', 'Redis', 'Protocol Buffers', 'Docker', 'Kubernetes', 'Prometheus', 'gRPC'],
-    category: 'Infrastructure',
-    demo_url: '',
-    repo_url: 'https://github.com/ennaguiyoussef',
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800&h=450&fit=crop',
-    metrics: { stars: 198, forks: 28 }
-  }
-];
+const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = RAW_API_URL.replace(/\/+$/, '');
 
 const categories = ['All', 'AI/ML', 'MLOps', 'Full-Stack', 'Infrastructure'];
 
@@ -205,7 +113,7 @@ const categoryIcons = {
 };
 
 function Projects() {
-  const [projects, setProjects] = useState(fallbackProjects);
+  const [projects, setProjects] = useState([]);
   const [status, setStatus] = useState('loading');
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -218,14 +126,11 @@ function Projects() {
         const res = await fetch(`${API_URL}/api/projects`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        if (data && data.length > 0) {
-          setProjects(data);
-          setStatus('ok');
-        } else {
-          setStatus('fallback');
-        }
+        setProjects(Array.isArray(data) ? data : []);
+        setStatus('ok');
       } catch {
-        setStatus('fallback');
+        setProjects([]);
+        setStatus('error');
       }
     }
     fetchProjects();
@@ -233,9 +138,10 @@ function Projects() {
 
   const filteredProjects = useMemo(() => projects.filter(project => {
     const matchesCategory = activeCategory === 'All' || project.category === activeCategory;
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          project.technologies.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    const projectTech = Array.isArray(project.technologies) ? project.technologies : [];
+    const matchesSearch = project.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          project.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          projectTech.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   }), [projects, activeCategory, searchQuery]);
 
@@ -320,7 +226,7 @@ function Projects() {
           </div>
         </motion.div>
 
-        {/* Status Messages */}
+        {/* Status & Empty Messages */}
         <AnimatePresence mode="wait">
           {status === 'loading' && (
             <motion.div
@@ -335,26 +241,26 @@ function Projects() {
             </motion.div>
           )}
 
-          {status === 'fallback' && (
-            <motion.div
-              className="projects-message projects-warning"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              key="fallback"
-            >
-              <Zap className="icon-md" />
-              API unavailable — showing sample projects. Start the backend to see live data.
-            </motion.div>
-          )}
-
-          {status !== 'loading' && filteredProjects.length === 0 && (
+          {status !== 'loading' && projects.length === 0 && (
             <motion.div
               className="projects-message"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              key="empty"
+              key="no-projects"
+            >
+              <FolderOpen className="icon-md" />
+              No projects found yet.
+            </motion.div>
+          )}
+
+          {status !== 'loading' && projects.length > 0 && filteredProjects.length === 0 && (
+            <motion.div
+              className="projects-message"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              key="empty-filter"
             >
               <Search className="icon-md" />
               No projects match your filters.
@@ -364,23 +270,25 @@ function Projects() {
 
         {/* Projects Grid/List */}
         <AnimatePresence mode="popLayout">
-          <motion.div
-            key={viewMode}
-            className={`projects-grid ${viewMode}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {filteredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={index}
-                viewMode={viewMode}
-              />
-            ))}
-          </motion.div>
+          {filteredProjects.length > 0 && (
+            <motion.div
+              key={viewMode}
+              className={`projects-grid ${viewMode}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {filteredProjects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  viewMode={viewMode}
+                />
+              ))}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </section>
@@ -390,9 +298,10 @@ function Projects() {
 function ProjectCard({ project, index, viewMode }) {
   const CategoryIcon = categoryIcons[project.category] || Code2;
   const PlaceholderIcon = categoryPlaceholderIcons[project.category] || Brain;
+  const technologies = Array.isArray(project.technologies) ? project.technologies : [];
 
-  const techToShow = project.technologies.slice(0, viewMode === 'grid' ? 6 : 8);
-  const remainingCount = project.technologies.length - techToShow.length;
+  const techToShow = technologies.slice(0, viewMode === 'grid' ? 6 : 8);
+  const remainingCount = technologies.length - techToShow.length;
 
   return (
     <motion.article
@@ -402,7 +311,7 @@ function ProjectCard({ project, index, viewMode }) {
       transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6 }}
     >
-      {/* 1. Preview Image / Mockup Banner */}
+      {/* Preview Image */}
       <div className="project-thumb group">
         <ProjectImage
           src={project.image}
@@ -415,15 +324,12 @@ function ProjectCard({ project, index, viewMode }) {
         </div>
       </div>
 
-      {/* 2. Card Content - Flex Column */}
+      {/* Card Content */}
       <div className="card-body">
-        {/* Title */}
         <h3 className="project-title">{project.title}</h3>
-
-        {/* Description - Clean 3-line clamp */}
         <p className="project-description">{project.description}</p>
 
-        {/* Tech Tags - Individual pill chips with clean flex gap layout */}
+        {/* Tech Tags */}
         <div className="project-tech" role="list" aria-label="Technologies used">
           {techToShow.map((tech, i) => (
             <motion.span
@@ -449,7 +355,7 @@ function ProjectCard({ project, index, viewMode }) {
           )}
         </div>
 
-        {/* 3. Footer Actions - Pinned to Bottom */}
+        {/* Footer Actions */}
         <div className="card-actions">
           {project.repo_url ? (
             <motion.a
