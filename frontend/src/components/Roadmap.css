@@ -662,6 +662,70 @@
 }
 
 /* ============================================
+   MOBILE TIMELINE — single left-aligned rail
+   Below 768px the 3-column (year | node | card) grid is too narrow: cards
+   and nowrap tags clip past the viewport. Collapse to block flow with one
+   spine pinned at left:20px, nodes centered on it, and every card + year
+   badge stacked to its right. Purely presentational — DOM order unchanged.
+   ============================================ */
+@media (max-width: 768px) {
+  .timeline-wrapper {
+    --timeline-axis-x: 20px; /* move the central spine to the far left */
+  }
+
+  /* Drop the grid; each step becomes its own positioning context */
+  .timeline-steps {
+    display: block;
+    padding-top: 0;
+  }
+
+  .timeline-step {
+    display: block;
+    position: relative;
+    padding-left: 45px; /* clear the 40px rail + breathing room */
+    margin-bottom: var(--space-10);
+  }
+
+  /* Year badge sits above the card, left-aligned (was right-aligned col 1) */
+  .timeline-year {
+    justify-content: flex-start;
+    padding: 0 0 var(--space-3) 0;
+  }
+
+  /* Node column pinned to the rail; node core (40px) centers on x=20px */
+  .timeline-node-column {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+  }
+
+  .node-wrapper {
+    width: 40px;
+  }
+
+  /* Inter-node connectors are redundant against the continuous spine */
+  .connector-segment {
+    display: none;
+  }
+
+  /* Card fills the remaining width; min-width:0 lets nowrap tags stay in-bounds */
+  .timeline-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .timeline-card:hover {
+    transform: none; /* translateX would push the card off-screen on mobile */
+  }
+
+  /* Full-width footer block flows normally once the grid is gone */
+  .future-aspirations {
+    margin-top: var(--space-6);
+  }
+}
+
+/* ============================================
    REDUCED MOTION
    ============================================ */
 @media (prefers-reduced-motion: reduce) {

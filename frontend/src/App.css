@@ -11,7 +11,13 @@
 
 #main-content {
   flex: 1;
+  width: 100%;
+  max-width: 100%;
   padding-top: var(--header-height);
+  /* clip (not hidden) contains any stray horizontal overflow WITHOUT creating
+     a scroll container — hidden would break position:sticky descendants
+     (.contact-info, .about-image). */
+  overflow-x: clip;
 }
 
 /* Footer */

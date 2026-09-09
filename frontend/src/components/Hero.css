@@ -95,6 +95,7 @@
   }
   .hero-content-left {
     order: 2;
+    align-items: center;
   }
   .hero-portrait {
     order: 1;
@@ -115,6 +116,15 @@
 @media (max-width: 960px) {
   .hero-greeting, .hero-role, .hero-actions {
     justify-content: center;
+  }
+}
+
+/* Mobile: the "scroll to explore" cue is absolutely positioned at the hero's
+   bottom edge; on the tall stacked layout it can overlap the wrapped action
+   buttons ("Contact Me"), so remove it and let the CTAs own that space. */
+@media (max-width: 768px) {
+  .scroll-indicator {
+    display: none;
   }
 }
 
@@ -208,6 +218,7 @@
   display: flex;
   gap: 1rem;
   margin-top: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .hero-actions .btn {

@@ -215,6 +215,8 @@
 }
 
 html {
+  width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -242,6 +244,7 @@ body {
   font-weight: var(--font-regular);
   min-height: 100vh;
   min-height: 100dvh;
+  width: 100%;
   overflow-x: hidden;
 }
 
@@ -254,6 +257,12 @@ img, video, canvas {
 }
 
 svg {
+  max-width: 100%;
+}
+
+/* Overflow safety net — no top-level section may exceed the viewport width,
+   so a stray wide child can never open a horizontal scrollbar on mobile. */
+section {
   max-width: 100%;
 }
 
