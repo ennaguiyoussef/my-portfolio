@@ -42,9 +42,9 @@ function App() {
       <footer className="footer">
         <div className="container">
           <p className="footer-text">
-            Built with <span className="heart">♥</span> by Youssef Ennagui
+            © {new Date().getFullYear()} Youssef Ennagui. All rights reserved.
             {' '}—{' '}
-            <span className="year">2024</span>
+            <span>Built with <span className="heart">♥</span></span>
           </p>
           <div className="footer-links">
             <a href="https://github.com/ennaguiyoussef" target="_blank" rel="noreferrer noopener">GitHub</a>
