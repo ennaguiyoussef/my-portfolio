@@ -508,6 +508,20 @@
   transform: translateY(-1px);
 }
 
+.action-btn.secondary {
+  background: var(--gradient-secondary);
+  color: var(--color-bg-deep);
+  border: none;
+  font-weight: var(--font-bold);
+  box-shadow: var(--glow-secondary);
+}
+
+.action-btn.secondary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--glow-secondary), var(--shadow-md);
+}
+
 .action-btn.disabled {
   color: var(--color-text-subtle);
   border: 1px dashed var(--color-border-subtle);
@@ -591,6 +605,15 @@
     background: rgba(203, 213, 225, 1);
     border-color: #94a3b8;
     color: #0f172a;
+  }
+
+  .action-btn.secondary {
+    background: var(--gradient-secondary);
+    color: #0f172a;
+  }
+
+  .action-btn.secondary:hover {
+    opacity: 0.9;
   }
 
   .project-card.is-featured {

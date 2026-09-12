@@ -11,6 +11,7 @@ import {
   Lock,
   FolderOpen,
   Eye,
+  ExternalLink,
 } from 'lucide-react';
 import './Projects.css';
 
@@ -362,6 +363,20 @@ function ProjectCard({ project, index, viewMode }) {
 
         {/* Footer Actions */}
         <div className="card-actions">
+          {project.demo_url && (
+            <motion.a
+              href={project.demo_url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="action-btn secondary"
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              aria-label={`View ${project.title} live demo`}
+            >
+              <ExternalLink className="icon-sm" aria-hidden="true" />
+              <span>Live Demo</span>
+            </motion.a>
+          )}
           {project.repo_url ? (
             <motion.a
               href={project.repo_url}
