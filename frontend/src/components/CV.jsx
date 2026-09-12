@@ -93,7 +93,7 @@ function CV() {
             <span>Download CV (PDF)</span>
             <ExternalLink className="icon-sm" />
           </motion.a>
-          <p className="download-note">Last updated: September 2024</p>
+          <p className="download-note">Last updated: September 2026</p>
         </motion.div>
 
         {/* Certifications */}

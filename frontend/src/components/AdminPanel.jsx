@@ -80,7 +80,7 @@ function AdminPanel() {
 
   const [cvUploading, setCvUploading] = useState(false);
 
-  const categories = ['AI/ML', 'Agentic AI', 'MLOps', 'Full-Stack', 'Infrastructure'];
+  const categories = ['AI/ML', 'Agentic AI', 'MLOps', 'Full-Stack', 'Computer Vision'];
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });

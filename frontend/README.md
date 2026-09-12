@@ -120,7 +120,7 @@ Based on 4px grid: `--space-1` (4px) through `--space-32` (128px)
 - Statistics summary cards
 
 ### Projects
-- Category filters (All, AI/ML, MLOps, Full-Stack, Infrastructure)
+- Category filters (All, AI/ML, Agentic AI, MLOps, Full-Stack, Computer Vision)
 - Search functionality
 - Grid/List view toggle
 - Hover reveal with full description

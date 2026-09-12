@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import shutil
 import sys
+import time
 from pathlib import Path
 
 from langchain_chroma import Chroma
@@ -21,7 +22,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from ..config import get_settings
-from .vectorstore import get_embeddings
+from .vectorstore import get_embeddings, get_vectorstore
 
 
 def _read_pdf(path: Path) -> str:
@@ -88,9 +89,33 @@ def run_ingest() -> dict[str, int]:
     chunks = splitter.split_documents(documents)
 
     # Rebuild the collection from scratch so stale content never lingers.
+    # First, invalidate the LRU cache to release any open file handles on Windows.
+    get_vectorstore.cache_clear()
+
+    # Small delay to ensure file handles are released on Windows
+    time.sleep(0.1)
+
     chroma_path = Path(settings.chroma_dir)
     if chroma_path.exists():
-        shutil.rmtree(chroma_path)
+        # Use ChromaDB's delete_collection instead of rmtree to avoid Windows file locking issues
+        try:
+            # Create a temporary vectorstore to delete the collection properly
+            temp_vs = Chroma(
+                collection_name=settings.collection_name,
+                embedding_function=get_embeddings(),
+                persist_directory=settings.chroma_dir,
+            )
+            temp_vs.delete_collection()
+        except Exception:
+            # Fallback: try to remove the directory with retries
+            for attempt in range(3):
+                try:
+                    shutil.rmtree(chroma_path)
+                    break
+                except PermissionError:
+                    if attempt == 2:
+                        raise
+                    time.sleep(0.5)
 
     Chroma.from_documents(
         documents=chunks,

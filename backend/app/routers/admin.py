@@ -138,8 +138,20 @@ def download_cv() -> FileResponse:
     cv_path = _cv_path()
     if not cv_path.exists():
         raise HTTPException(status_code=404, detail="No CV has been uploaded yet.")
+
+    # Get file modification time for Last-Modified header
+    import time
+    mtime = cv_path.stat().st_mtime
+    last_modified = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))
+
     return FileResponse(
         path=str(cv_path),
         media_type="application/pdf",
         filename="Youssef-Ennagui-CV.pdf",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+            "Last-Modified": last_modified,
+        },
     )

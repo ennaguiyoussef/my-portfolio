@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   GitBranch,
   Code2,
-  Database,
   Cpu,
   Brain,
   Layers,
@@ -11,6 +10,7 @@ import {
   Filter,
   Lock,
   FolderOpen,
+  Eye,
 } from 'lucide-react';
 import './Projects.css';
 
@@ -19,7 +19,8 @@ const categoryPlaceholderIcons = {
   'AI/ML': Brain,
   'MLOps': Cpu,
   'Full-Stack': Code2,
-  'Infrastructure': Database,
+  'Computer Vision': Eye,
+  'Agentic AI': Brain,
 };
 
 // SVG Gradient Placeholder Component
@@ -28,21 +29,24 @@ function ProjectPlaceholder({ category, CategoryIcon }) {
     'AI/ML': 'from-cyan-500/20 via-blue-500/10 to-purple-500/20',
     'MLOps': 'from-purple-500/20 via-violet-500/10 to-indigo-500/20',
     'Full-Stack': 'from-emerald-500/20 via-teal-500/10 to-cyan-500/20',
-    'Infrastructure': 'from-amber-500/20 via-orange-500/10 to-red-500/20',
+    'Computer Vision': 'from-pink-500/20 via-rose-500/10 to-red-500/20',
+    'Agentic AI': 'from-cyan-500/20 via-blue-500/10 to-purple-500/20',
   };
 
   const borderColors = {
     'AI/ML': 'border-cyan-500/30',
     'MLOps': 'border-purple-500/30',
     'Full-Stack': 'border-emerald-500/30',
-    'Infrastructure': 'border-amber-500/30',
+    'Computer Vision': 'border-pink-500/30',
+    'Agentic AI': 'border-cyan-500/30',
   };
 
   const iconColors = {
     'AI/ML': 'text-cyan-400',
     'MLOps': 'text-purple-400',
     'Full-Stack': 'text-emerald-400',
-    'Infrastructure': 'text-amber-400',
+    'Computer Vision': 'text-pink-400',
+    'Agentic AI': 'text-cyan-400',
   };
 
   const gradient = gradients[category] || gradients['AI/ML'];
@@ -102,13 +106,14 @@ function ProjectImage({ src, alt, category, CategoryIcon, isError }) {
 const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_URL = RAW_API_URL.replace(/\/+$/, '');
 
-const categories = ['All', 'AI/ML', 'MLOps', 'Full-Stack', 'Infrastructure'];
+const categories = ['All', 'AI/ML', 'MLOps', 'Full-Stack', 'Computer Vision', 'Agentic AI'];
 
 const categoryIcons = {
   'AI/ML': Brain,
   'MLOps': Cpu,
   'Full-Stack': Code2,
-  'Infrastructure': Database,
+  'Computer Vision': Eye,
+  'Agentic AI': Brain,
   'All': Layers
 };
 
